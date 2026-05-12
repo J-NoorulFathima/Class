@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Study Hub Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b,#111827);
+    min-height:100vh;
+    padding:40px 20px;
+    color:white;
+    overflow-x:hidden;
+}
+
+/* Background Glow */
+
+.bg1,
+.bg2{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(90px);
+    z-index:-1;
+}
+
+.bg1{
+    width:300px;
+    height:300px;
+    background:#7c3aed;
+    top:-100px;
+    left:-100px;
+}
+
+.bg2{
+    width:350px;
+    height:350px;
+    background:#06b6d4;
+    bottom:-120px;
+    right:-120px;
+}
+
+/* Container */
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+/* Header */
+
+.header{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.header h1{
+    font-size:3rem;
+    font-weight:700;
+    margin-bottom:10px;
+    background:linear-gradient(to right,#38bdf8,#c084fc);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.header p{
+    color:#cbd5e1;
+    font-size:1rem;
+}
+
+/* Form */
+
+.form-box{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,0.1);
+    padding:25px;
+    border-radius:24px;
+    margin-bottom:40px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.input-group label{
+    margin-bottom:8px;
+    color:#dbeafe;
+    font-size:14px;
+}
+
+.input-group input{
+    padding:14px;
+    border:none;
+    outline:none;
+    border-radius:14px;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    font-size:15px;
+}
+
+.input-group input::placeholder{
+    color:#cbd5e1;
+}
+
+/* Button */
+
+.add-btn{
+    margin-top:20px;
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(to right,#06b6d4,#7c3aed);
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.add-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(124,58,237,0.4);
+}
+
+/* Cards */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px);
+    padding:25px;
+    border-radius:24px;
+    transition:0.4s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card::before{
+    content:'';
+    position:absolute;
+    width:120px;
+    height:120px;
+    background:rgba(255,255,255,0.05);
+    border-radius:50%;
+    top:-50px;
+    right:-50px;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+.subject{
+    font-size:1.4rem;
+    font-weight:600;
+    margin-bottom:20px;
+}
+
+/* Links */
+
+.links{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.links a{
+    text-decoration:none;
+    padding:14px;
+    border-radius:14px;
+    color:white;
+    font-weight:500;
+    transition:0.3s;
+}
+
+.meeting-link{
+    background:linear-gradient(to right,#2563eb,#06b6d4);
+}
+
+.recorded-link{
+    background:linear-gradient(to right,#7c3aed,#ec4899);
+}
+
+.links a:hover{
+    transform:scale(1.03);
+}
+
+/* Delete Button */
+
+.delete-btn{
+    margin-top:20px;
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:14px;
+    background:#ef4444;
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.delete-btn:hover{
+    background:#dc2626;
+}
+
+/* Empty */
+
+.empty{
+    text-align:center;
+    margin-top:50px;
+    color:#cbd5e1;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+    .header h1{
+        font-size:2.2rem;
+    }
+
+    body{
+        padding:20px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="bg1"></div>
+<div class="bg2"></div>
+
+<div class="container">
+
+    <div class="header">
+        <h1>📚 Study Hub</h1>
+        <p>Store subjects, meeting links & recorded sessions in one place</p>
+    </div>
+
+    <div class="form-box">
+
+        <div class="form-grid">
+
+            <div class="input-group">
+                <label>Subject Name</label>
+                <input type="text" id="subject" placeholder="Example: DBMS">
+            </div>
+
+            <div class="input-group">
+                <label>Meeting Link</label>
+                <input type="text" id="meeting" placeholder="https://meet.google.com/...">
+            </div>
+
+            <div class="input-group">
+                <label>Recorded Session Link</label>
+                <input type="text" id="recorded" placeholder="https://youtube.com/...">
+            </div>
+
+        </div>
+
+        <button class="add-btn" onclick="addSubject()">
+            + Add Subject
+        </button>
+
+    </div>
+
+    <div class="cards" id="cardsContainer"></div>
+
+    <div class="empty" id="emptyText">
+        No subjects added yet 🚀
+    </div>
+
+</div>
+
+<script>
+
+let subjects = JSON.parse(localStorage.getItem("studyHub")) || [];
+
+function saveData(){
+    localStorage.setItem("studyHub", JSON.stringify(subjects));
+}
+
+function renderCards(){
+
+    const container = document.getElementById("cardsContainer");
+    const emptyText = document.getElementById("emptyText");
+
+    container.innerHTML = "";
+
+    if(subjects.length === 0){
+        emptyText.style.display = "block";
+    }
+    else{
+        emptyText.style.display = "none";
+    }
+
+    subjects.forEach((item,index)=>{
+
+        container.innerHTML += `
+
+        <div class="card">
+
+            <div class="subject">
+                ${item.subject}
+            </div>
+
+            <div class="links">
+
+                <a 
+                    class="meeting-link"
+                    href="${item.meeting}" 
+                    target="_blank"
+                >
+                    🔗 Join Live Meeting
+                </a>
+
+                <a 
+                    class="recorded-link"
+                    href="${item.recorded}" 
+                    target="_blank"
+                >
+                    🎥 Watch Recorded Session
+                </a>
+
+            </div>
+
+            <button 
+                class="delete-btn"
+                onclick="deleteSubject(${index})"
+            >
+                Delete
+            </button>
+
+        </div>
+
+        `;
+    });
+}
+
+function addSubject(){
+
+    const subject = document.getElementById("subject").value.trim();
+    const meeting = document.getElementById("meeting").value.trim();
+    const recorded = document.getElementById("recorded").value.trim();
+
+    if(subject === "" || meeting === "" || recorded === ""){
+        alert("Please fill all fields");
+        return;
+    }
+
+    subjects.push({
+        subject,
+        meeting,
+        recorded
+    });
+
+    saveData();
+    renderCards();
+
+    document.getElementById("subject").value = "";
+    document.getElementById("meeting").value = "";
+    document.getElementById("recorded").value = "";
+}
+
+function deleteSubject(index){
+
+    subjects.splice(index,1);
+
+    saveData();
+    renderCards();
+}
+
+renderCards();
+
+</script>
+
+</body>
+</html>
