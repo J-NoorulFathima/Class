@@ -32,13 +32,13 @@ body{
 .bg2{
     position:fixed;
     border-radius:50%;
-    filter:blur(90px);
+    filter:blur(100px);
     z-index:-1;
 }
 
 .bg1{
-    width:300px;
-    height:300px;
+    width:320px;
+    height:320px;
     background:#7c3aed;
     top:-100px;
     left:-100px;
@@ -130,14 +130,7 @@ body{
     color:#cbd5e1;
 }
 
-input[type="file"]{
-    padding:10px;
-    background:rgba(255,255,255,0.1);
-    border-radius:14px;
-    color:white;
-}
-
-/* Button */
+/* Buttons */
 
 .add-btn{
     margin-top:20px;
@@ -164,6 +157,7 @@ input[type="file"]{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
     gap:25px;
+    margin-top:20px;
 }
 
 .card{
@@ -341,14 +335,18 @@ input[type="file"]{
             </div>
 
             <div class="input-group">
-                <label>Upload PDF</label>
-                <input type="file" id="materialFile" accept=".pdf">
+                <label>PDF Link</label>
+                <input 
+                    type="text" 
+                    id="materialLink" 
+                    placeholder="Paste Google Drive / PDF Link"
+                >
             </div>
 
         </div>
 
         <button class="add-btn" onclick="addMaterial()">
-            + Upload Material
+            + Add Material
         </button>
 
     </div>
@@ -359,42 +357,51 @@ input[type="file"]{
 
     <!-- MATERIAL CARDS -->
 
-    <div class="cards" id="materialsContainer" style="margin-top:40px;"></div>
+    <div class="cards" id="materialsContainer"></div>
 
     <div class="empty" id="emptyText">
-        No subjects added yet 🚀
+        No subjects or materials added yet 🚀
     </div>
 
 </div>
 
 <script>
 
+/* STORAGE */
+
 let subjects = JSON.parse(localStorage.getItem("studyHub")) || [];
+
 let materials = JSON.parse(localStorage.getItem("studyMaterials")) || [];
 
+/* SAVE FUNCTIONS */
+
 function saveData(){
-    localStorage.setItem("studyHub", JSON.stringify(subjects));
+
+    localStorage.setItem(
+        "studyHub",
+        JSON.stringify(subjects)
+    );
 }
 
 function saveMaterials(){
-    localStorage.setItem("studyMaterials", JSON.stringify(materials));
+
+    localStorage.setItem(
+        "studyMaterials",
+        JSON.stringify(materials)
+    );
 }
 
-/* SUBJECTS */
+/* SUBJECT SECTION */
 
 function renderCards(){
 
-    const container = document.getElementById("cardsContainer");
-    const emptyText = document.getElementById("emptyText");
+    const container =
+        document.getElementById("cardsContainer");
+
+    const emptyText =
+        document.getElementById("emptyText");
 
     container.innerHTML = "";
-
-    if(subjects.length === 0 && materials.length === 0){
-        emptyText.style.display = "block";
-    }
-    else{
-        emptyText.style.display = "none";
-    }
 
     subjects.forEach((item,index)=>{
 
@@ -430,22 +437,30 @@ function renderCards(){
                 class="delete-btn"
                 onclick="deleteSubject(${index})"
             >
-                Delete
+                Delete Subject
             </button>
 
         </div>
 
         `;
     });
+
+    checkEmpty();
 }
 
 function addSubject(){
 
-    const subject = document.getElementById("subject").value.trim();
-    const meeting = document.getElementById("meeting").value.trim();
-    const recorded = document.getElementById("recorded").value.trim();
+    const subject =
+        document.getElementById("subject").value.trim();
+
+    const meeting =
+        document.getElementById("meeting").value.trim();
+
+    const recorded =
+        document.getElementById("recorded").value.trim();
 
     if(subject === "" || meeting === "" || recorded === ""){
+
         alert("Please fill all fields");
         return;
     }
@@ -460,13 +475,17 @@ function addSubject(){
     renderCards();
 
     document.getElementById("subject").value = "";
+
     document.getElementById("meeting").value = "";
+
     document.getElementById("recorded").value = "";
 }
 
 function deleteSubject(index){
 
-    const confirmDelete = confirm("Do you really want to delete this subject?");
+    const confirmDelete = confirm(
+        "Do you really want to delete this subject?"
+    );
 
     if(confirmDelete){
 
@@ -477,11 +496,12 @@ function deleteSubject(index){
     }
 }
 
-/* MATERIALS */
+/* MATERIALS SECTION */
 
 function renderMaterials(){
 
-    const container = document.getElementById("materialsContainer");
+    const container =
+        document.getElementById("materialsContainer");
 
     container.innerHTML = "";
 
@@ -495,7 +515,10 @@ function renderMaterials(){
                 📘 ${item.subject}
             </div>
 
-            <p style="margin-bottom:18px;color:#cbd5e1;">
+            <p style="
+                margin-bottom:18px;
+                color:#cbd5e1;
+            ">
                 ${item.name}
             </p>
 
@@ -506,7 +529,7 @@ function renderMaterials(){
                     href="${item.file}" 
                     target="_blank"
                 >
-                    📄 Open PDF Material
+                    📄 Open Learning Material
                 </a>
 
             </div>
@@ -522,46 +545,51 @@ function renderMaterials(){
 
         `;
     });
+
+    checkEmpty();
 }
 
 function addMaterial(){
 
-    const subject = document.getElementById("materialSubject").value.trim();
-    const name = document.getElementById("materialName").value.trim();
-    const fileInput = document.getElementById("materialFile");
+    const subject =
+        document.getElementById("materialSubject")
+        .value.trim();
 
-    if(subject === "" || name === "" || fileInput.files.length === 0){
+    const name =
+        document.getElementById("materialName")
+        .value.trim();
+
+    const link =
+        document.getElementById("materialLink")
+        .value.trim();
+
+    if(subject === "" || name === "" || link === ""){
 
         alert("Please fill all material fields");
         return;
     }
 
-    const file = fileInput.files[0];
+    materials.push({
+        subject,
+        name,
+        file:link
+    });
 
-    const reader = new FileReader();
+    saveMaterials();
+    renderMaterials();
 
-    reader.onload = function(e){
+    document.getElementById("materialSubject").value = "";
 
-        materials.push({
-            subject,
-            name,
-            file:e.target.result
-        });
+    document.getElementById("materialName").value = "";
 
-        saveMaterials();
-        renderMaterials();
-
-        document.getElementById("materialSubject").value = "";
-        document.getElementById("materialName").value = "";
-        document.getElementById("materialFile").value = "";
-    };
-
-    reader.readAsDataURL(file);
+    document.getElementById("materialLink").value = "";
 }
 
 function deleteMaterial(index){
 
-    const confirmDelete = confirm("Do you really want to delete this material?");
+    const confirmDelete = confirm(
+        "Do you really want to delete this material?"
+    );
 
     if(confirmDelete){
 
@@ -571,6 +599,25 @@ function deleteMaterial(index){
         renderMaterials();
     }
 }
+
+/* EMPTY CHECK */
+
+function checkEmpty(){
+
+    const emptyText =
+        document.getElementById("emptyText");
+
+    if(subjects.length === 0 && materials.length === 0){
+
+        emptyText.style.display = "block";
+    }
+    else{
+
+        emptyText.style.display = "none";
+    }
+}
+
+/* INITIAL RENDER */
 
 renderCards();
 renderMaterials();
