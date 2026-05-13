@@ -92,6 +92,13 @@ body{
     box-shadow:0 10px 40px rgba(0,0,0,0.3);
 }
 
+.section-title{
+    font-size:1.4rem;
+    margin-bottom:20px;
+    font-weight:600;
+    color:#f8fafc;
+}
+
 .form-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -121,6 +128,13 @@ body{
 
 .input-group input::placeholder{
     color:#cbd5e1;
+}
+
+input[type="file"]{
+    padding:10px;
+    background:rgba(255,255,255,0.1);
+    border-radius:14px;
+    color:white;
 }
 
 /* Button */
@@ -210,6 +224,10 @@ body{
     background:linear-gradient(to right,#7c3aed,#ec4899);
 }
 
+.material-link{
+    background:linear-gradient(to right,#10b981,#14b8a6);
+}
+
 .links a:hover{
     transform:scale(1.03);
 }
@@ -266,10 +284,16 @@ body{
 
     <div class="header">
         <h1>📚 Study Hub</h1>
-        <p>Store subjects, meeting links & recorded sessions in one place</p>
+        <p>Store subjects, meeting links, recordings & learning materials</p>
     </div>
 
+    <!-- SUBJECT SECTION -->
+
     <div class="form-box">
+
+        <div class="section-title">
+            Add Subject
+        </div>
 
         <div class="form-grid">
 
@@ -296,7 +320,46 @@ body{
 
     </div>
 
+    <!-- LEARNING MATERIAL SECTION -->
+
+    <div class="form-box">
+
+        <div class="section-title">
+            Upload Learning Materials
+        </div>
+
+        <div class="form-grid">
+
+            <div class="input-group">
+                <label>Subject Name</label>
+                <input type="text" id="materialSubject" placeholder="Example: Operating Systems">
+            </div>
+
+            <div class="input-group">
+                <label>Material Name</label>
+                <input type="text" id="materialName" placeholder="Example: Unit 1 Notes">
+            </div>
+
+            <div class="input-group">
+                <label>Upload PDF</label>
+                <input type="file" id="materialFile" accept=".pdf">
+            </div>
+
+        </div>
+
+        <button class="add-btn" onclick="addMaterial()">
+            + Upload Material
+        </button>
+
+    </div>
+
+    <!-- SUBJECT CARDS -->
+
     <div class="cards" id="cardsContainer"></div>
+
+    <!-- MATERIAL CARDS -->
+
+    <div class="cards" id="materialsContainer" style="margin-top:40px;"></div>
 
     <div class="empty" id="emptyText">
         No subjects added yet 🚀
@@ -307,10 +370,17 @@ body{
 <script>
 
 let subjects = JSON.parse(localStorage.getItem("studyHub")) || [];
+let materials = JSON.parse(localStorage.getItem("studyMaterials")) || [];
 
 function saveData(){
     localStorage.setItem("studyHub", JSON.stringify(subjects));
 }
+
+function saveMaterials(){
+    localStorage.setItem("studyMaterials", JSON.stringify(materials));
+}
+
+/* SUBJECTS */
 
 function renderCards(){
 
@@ -319,7 +389,7 @@ function renderCards(){
 
     container.innerHTML = "";
 
-    if(subjects.length === 0){
+    if(subjects.length === 0 && materials.length === 0){
         emptyText.style.display = "block";
     }
     else{
@@ -396,13 +466,114 @@ function addSubject(){
 
 function deleteSubject(index){
 
-    subjects.splice(index,1);
+    const confirmDelete = confirm("Do you really want to delete this subject?");
 
-    saveData();
-    renderCards();
+    if(confirmDelete){
+
+        subjects.splice(index,1);
+
+        saveData();
+        renderCards();
+    }
+}
+
+/* MATERIALS */
+
+function renderMaterials(){
+
+    const container = document.getElementById("materialsContainer");
+
+    container.innerHTML = "";
+
+    materials.forEach((item,index)=>{
+
+        container.innerHTML += `
+
+        <div class="card">
+
+            <div class="subject">
+                📘 ${item.subject}
+            </div>
+
+            <p style="margin-bottom:18px;color:#cbd5e1;">
+                ${item.name}
+            </p>
+
+            <div class="links">
+
+                <a 
+                    class="material-link"
+                    href="${item.file}" 
+                    target="_blank"
+                >
+                    📄 Open PDF Material
+                </a>
+
+            </div>
+
+            <button 
+                class="delete-btn"
+                onclick="deleteMaterial(${index})"
+            >
+                Delete Material
+            </button>
+
+        </div>
+
+        `;
+    });
+}
+
+function addMaterial(){
+
+    const subject = document.getElementById("materialSubject").value.trim();
+    const name = document.getElementById("materialName").value.trim();
+    const fileInput = document.getElementById("materialFile");
+
+    if(subject === "" || name === "" || fileInput.files.length === 0){
+
+        alert("Please fill all material fields");
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        materials.push({
+            subject,
+            name,
+            file:e.target.result
+        });
+
+        saveMaterials();
+        renderMaterials();
+
+        document.getElementById("materialSubject").value = "";
+        document.getElementById("materialName").value = "";
+        document.getElementById("materialFile").value = "";
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function deleteMaterial(index){
+
+    const confirmDelete = confirm("Do you really want to delete this material?");
+
+    if(confirmDelete){
+
+        materials.splice(index,1);
+
+        saveMaterials();
+        renderMaterials();
+    }
 }
 
 renderCards();
+renderMaterials();
 
 </script>
 
